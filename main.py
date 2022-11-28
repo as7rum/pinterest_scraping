@@ -10,17 +10,18 @@ import os
 #     pass
 
 scroll_num = 20
-sleep_timer = 5
+sleep_timer = 10
 var = 'машины'
 url = f'https://ru.pinterest.com/search/pins/?q={var}'
 
 
-options = webdriver.ChromeOptions()   
+options = webdriver.ChromeOptions()  
+options.add_argument('--blink-settings=imagesEnabled=false') 
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 driver = webdriver.Chrome(executable_path='chromedriver.exe', options=options)
 driver.maximize_window()
 driver.get(url)
-driver.execute_script(f"document.body.style.zoom='{1}%'")
+driver.execute_script(f"document.body.style.zoom='{100}%'")
 driver.execute_script("window.dispatchEvent(new Event('resize'));")
 time.sleep(sleep_timer)
 
