@@ -53,11 +53,13 @@ def get_images(var, sleep_timer, limit):
 
 COUNT_FOR_SENDING = 5
 current_sending_page = 1
-images_array = [1, 2, 3, 4, 5, 6, 7, 8, 8, 0, 10, 11, 12, 143, 123, 12, 12]
+# images_array = [1, 2, 3, 4, 5, 6, 7, 8, 8, 0, 10, 11, 12, 143, 123, 12, 12]
 
 def send_five_photos():
-    global current_sending_page
 
+    images_array = get_images(var, sleep_timer, limit)
+    global current_sending_page
+    
     start_index = (current_sending_page-1) * COUNT_FOR_SENDING
     images = images_array[start_index:start_index + COUNT_FOR_SENDING]
     current_sending_page += 1
@@ -65,4 +67,7 @@ def send_five_photos():
     return images
 
 if __name__ == '__main__':
-    print(get_images(var, sleep_timer, limit))
+    while True:
+        user_input = input("Напишите next для продолжения: ")
+        if user_input == 'next':
+            print(send_five_photos())
