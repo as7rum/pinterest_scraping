@@ -5,19 +5,13 @@ import time
 import os
 import pandas as pd
 
-# try:
-#     os.chdir(os.path.join(os.getcwd(), 'images'))
-# except:
-#     pass
-
 list_of_images = []
 current_sending_page = 2
 COUNT_FOR_SENDING = 5
 
 scroll_num = 20
-sleep_timer = 1
-var = 'машины'
-limit = 20
+sleep_timer = 1#+=sleep_timer
+limit = 20#+=limit
 
 def get_images(var, sleep_timer, limit):
 
@@ -73,15 +67,20 @@ if __name__ == '__main__':
         ''')
         if user_input == 'стоп':
             break
+        if user_input != 'еще':
+            pin_request_input = user_input
+            current_sending_page = 2
+            print(get_images(user_input, sleep_timer, limit))
         if user_input == 'еще':
             if list_of_images == []:
                 print('вы еще ничего не искали!')
-                current_sending_page = 2
             else:
+                if send_five_photos() == []:
+                    sleep_timer += 1
+                    limit += 20
+                    get_images(pin_request_input, sleep_timer, limit)
+                current_sending_page -= 1
                 print(send_five_photos())
-        if user_input != 'еще':
-            current_sending_page = 2
-            print(get_images(user_input, sleep_timer, limit))
     #     user_input = input("Напишите next для продолжения: ")
     #     if user_input == 'next':
     #         print(send_five_photos())
