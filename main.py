@@ -70,7 +70,11 @@ if __name__ == '__main__':
         if user_input != 'еще':
             pin_request_input = user_input
             current_sending_page = 2
-            print(get_images(user_input, sleep_timer, limit))
+            images_link = get_images(user_input, sleep_timer, limit)
+            for image_link in images_link:
+                with open('images/' + image_link.split('/')[-1], 'wb') as file:
+                    image = requests.get(image_link)
+                    file.write(image.content)
         if user_input == 'еще':
             if list_of_images == []:
                 print('вы еще ничего не искали!')
@@ -80,7 +84,11 @@ if __name__ == '__main__':
                     limit += 20
                     get_images(pin_request_input, sleep_timer, limit)
                 current_sending_page -= 1
-                print(send_five_photos())
+                images_link = send_five_photos()
+                for image_link in images_link:
+                    with open('images/' + image_link.split('/')[-1], 'wb') as file:
+                        image = requests.get(image_link)
+                        file.write(image.content)
     #     user_input = input("Напишите next для продолжения: ")
     #     if user_input == 'next':
     #         print(send_five_photos())
