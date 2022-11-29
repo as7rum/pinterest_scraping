@@ -2,8 +2,6 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
 import time
-import os
-import pandas as pd
 
 list_of_images = []
 current_sending_page = 2
