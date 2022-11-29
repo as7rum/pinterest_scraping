@@ -11,6 +11,8 @@ import pandas as pd
 #     pass
 
 list_of_images = []
+current_sending_page = 2
+COUNT_FOR_SENDING = 5
 
 scroll_num = 20
 sleep_timer = 1
@@ -48,17 +50,13 @@ def get_images(var, sleep_timer, limit):
         # with open('images/' + names_of_images.replace('/', ' ')+'.png', 'wb') as file:
         #     image = requests.get(link)
         #     file.write(image.content)
-
-    return list_of_images
-
-COUNT_FOR_SENDING = 5
-current_sending_page = 1
-# images_array = [1, 2, 3, 4, 5, 6, 7, 8, 8, 0, 10, 11, 12, 143, 123, 12, 12]
+    return list_of_images[:5]
 
 def send_five_photos():
 
-    images_array = get_images(var, sleep_timer, limit)
+    images_array = list_of_images  #get_images(var, sleep_timer, limit)
     global current_sending_page
+    print(current_sending_page)
     
     start_index = (current_sending_page-1) * COUNT_FOR_SENDING
     images = images_array[start_index:start_index + COUNT_FOR_SENDING]
@@ -67,7 +65,23 @@ def send_five_photos():
     return images
 
 if __name__ == '__main__':
-    while True:
-        user_input = input("Напишите next для продолжения: ")
-        if user_input == 'next':
-            print(send_five_photos())
+     while True:
+        user_input = input('''
+        Введите ваш запрос, чтобы получить по нему картинки.
+        Если вы хотите получить больше картинок, введите "еще".
+        Если вы хотите завершить программу, введите "стоп"
+        ''')
+        if user_input == 'стоп':
+            break
+        if user_input == 'еще':
+            if list_of_images == []:
+                print('вы еще ничего не искали!')
+                current_sending_page = 2
+            else:
+                print(send_five_photos())
+        if user_input != 'еще':
+            current_sending_page = 2
+            print(get_images(user_input, sleep_timer, limit))
+    #     user_input = input("Напишите next для продолжения: ")
+    #     if user_input == 'next':
+    #         print(send_five_photos())
