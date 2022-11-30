@@ -49,16 +49,12 @@ def get_images(var, sleep_timer, limit):
         if link not in list_of_images:
             list_of_images.append(link)
 
-        # with open('images/' + names_of_images.replace('/', ' ')+'.png', 'wb') as file:
-        #     image = requests.get(link)
-        #     file.write(image.content)
     return list_of_images[:5]
 
 def send_five_photos():
 
-    images_array = list_of_images  #get_images(var, sleep_timer, limit)
+    images_array = list_of_images
     global current_sending_page
-    # print(current_sending_page)
     
     start_index = (current_sending_page-1) * COUNT_FOR_SENDING
     images = images_array[start_index:start_index + COUNT_FOR_SENDING]
@@ -77,6 +73,8 @@ async def start_command(message: types.Message):
 @dp.message_handler()
 async def send(message: types.Message):
 
+    message.text = message.text.lower()
+
     global sleep_timer
     global limit
     global list_of_images
@@ -86,17 +84,16 @@ async def send(message: types.Message):
     if message.text == 'дарлинг':
         await message.answer("""И все же ты солнышко, май литл стар✨ 
 Я тоже подумал, что пасхалки должны оставаться""")
+        return
+
     if message.text != 'еще':
         pin_request_input = message.text
         current_sending_page = 2
         images_link = get_images(message.text, sleep_timer, limit)
         map_images_link = list(map(lambda x: types.InputMediaPhoto(x), images_link))
+        await message.answer(pin_request_input)
         await message.answer_media_group(map_images_link)
-        # for image_link in images_link:
-        #     await message.answer_photo(image_link)
-            # with open('images/' + image_link.split('/')[-1], 'wb') as file:
-            #     image = requests.get(image_link)
-            #     await bot.send_photo()
+
     if message.text == 'еще':
         if list_of_images == []:
             await message.answer('вы еще ничего не искали!')
@@ -108,14 +105,8 @@ async def send(message: types.Message):
             current_sending_page -= 1
             images_link = send_five_photos()
             map_images_link = list(map(lambda x: types.InputMediaPhoto(x), images_link))
+            await message.answer('еще '+pin_request_input) 
             await message.answer_media_group(map_images_link)
-            # for image_link in images_link:
-            #     await message.answer_photo(image_link)
-                # with open('images/' + image_link.split('/')[-1], 'wb') as file:
-                #     image = requests.get(image_link)
-                #     file.write(image.content)
-   
-
 
 
 if __name__ == '__main__':
