@@ -1,7 +1,5 @@
 config.py
 images/
-<<<<<<< HEAD
 __pycache__/
-=======
-__pycache__/
->>>>>>> main
+messages.py
+requirements.txt
