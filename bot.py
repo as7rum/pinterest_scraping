@@ -8,6 +8,7 @@ import time
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
 from aiogram.filters.text import Text
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 logging.basicConfig(level =logging.INFO)
 
@@ -71,7 +72,7 @@ async def start_command(message: types.Message):
 async def darling(message: types.Message):
     await message.answer(darling_message)
 
-@dp.message(Text(text="еще", ignore_case=True))
+@dp.message(Text(text= ["ещё картинки", 'еще', 'ещё'], ignore_case=True))
 async def send_other_photos(message: types.Message):
     global sleep_timer
     global limit
@@ -90,24 +91,43 @@ async def send_other_photos(message: types.Message):
         await message.answer('Еще '+pin_request_input) 
         await message.answer_media_group(map_images_link)
 
+@dp.message(Text(text="другой запрос", ignore_case=True))
+async def with_puree(message: types.Message):
+    await message.answer("Хорошо, введите другой запрос.", 
+    reply_markup=types.ReplyKeyboardRemove())
+
 
 @dp.message()
 async def send(message: types.Message):
 
-    result_message = message.text.lower()
+    # result_message = message.text.lower()
 
     global sleep_timer
     global limit
     global current_sending_page
     global pin_request_input
 
+    kb = [
+        [
+            types.KeyboardButton(text="Ещё картинки"),
+            types.KeyboardButton(text="Другой запрос")
+        ],
+    ]
+
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder="Что хочешь сделать дальше?"
+    )
+
     pin_request_input = message.text
     current_sending_page = 1
     get_images(message.text, sleep_timer, limit)
     images_link = get_five_photos()
     map_images_link = list(map(lambda x: types.InputMediaPhoto(media = x), images_link))
-    await message.answer(pin_request_input)
+    await message.answer(pin_request_input, reply_markup=keyboard)
     await message.answer_media_group(map_images_link)
+
 
 async def main():
     await dp.start_polling(bot)
