@@ -1,15 +1,18 @@
 from config import API_TOKEN
 from messages import start_message, darling_message
+import asyncio
+import logging
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-from aiogram.dispatcher.filters import Text
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters.command import Command
+from aiogram.filters.text import Text
+
+logging.basicConfig(level =logging.INFO)
 
 bot = Bot(token = API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 list_of_images = []
 current_sending_page = 1
@@ -60,15 +63,15 @@ def get_five_photos():
 
     return images
 
-@dp.message_handler(commands = ['start'])
+@dp.message(Command("start"))
 async def start_command(message: types.Message):
     await message.answer(start_message)
 
-@dp.message_handler(lambda message: message.text == "дарлинг")
+@dp.message(Text(text="дарлинг", ignore_case=True))
 async def darling(message: types.Message):
     await message.answer(darling_message)
 
-@dp.message_handler(lambda message: message.text == "еще")
+@dp.message(Text(text="еще", ignore_case=True))
 async def send_other_photos(message: types.Message):
     global sleep_timer
     global limit
@@ -83,15 +86,15 @@ async def send_other_photos(message: types.Message):
             get_images(pin_request_input, sleep_timer, limit)
         current_sending_page -= 1
         images_link = get_five_photos()
-        map_images_link = list(map(lambda x: types.InputMediaPhoto(x), images_link))
+        map_images_link = list(map(lambda x: types.InputMediaPhoto(media = x), images_link))
         await message.answer('Еще '+pin_request_input) 
         await message.answer_media_group(map_images_link)
 
 
-@dp.message_handler()
+@dp.message()
 async def send(message: types.Message):
 
-    message.text = message.text.lower()
+    result_message = message.text.lower()
 
     global sleep_timer
     global limit
@@ -102,9 +105,12 @@ async def send(message: types.Message):
     current_sending_page = 1
     get_images(message.text, sleep_timer, limit)
     images_link = get_five_photos()
-    map_images_link = list(map(lambda x: types.InputMediaPhoto(x), images_link))
+    map_images_link = list(map(lambda x: types.InputMediaPhoto(media = x), images_link))
     await message.answer(pin_request_input)
     await message.answer_media_group(map_images_link)
 
-if __name__ == '__main__':
-    executor.start_polling(dp)
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
